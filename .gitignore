@@ -1,0 +1,14 @@
+# Ocultar o arquivo de senhas e chaves privadas
+.env
+
+# Ocultar a pasta pesada de bibliotecas do ambiente virtual
+venv/
+.venv/
+
+# Ocultar arquivos de cache do Python e do Pytest
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Ocultar o arquivo de banco de dados local para não misturar com o do avaliador
+biblioteca.db
