@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import database as db
+import schemas
 
 app = FastAPI(title="API de Biblioteca Virtual")
 
@@ -19,8 +20,8 @@ def get_db():
         database.close()
 
 # Rota para cadastrar livros
-@app.post("/books", response_model=db.BookResponse, status_code=201)
-def create_book(book: db.BookCreate, session: Session = Depends(get_db)):
+@app.post("/books", response_model=schemas.BookResponse, status_code=201)
+def create_book(book: schemas.BookCreate, session: Session = Depends(get_db)):
     db_book = db.BookModel(
         title=book.title,
         author=book.author,
@@ -33,7 +34,7 @@ def create_book(book: db.BookCreate, session: Session = Depends(get_db)):
     return db_book
 
 # Rota para consultar livros com filtros parciais opcionais
-@app.get("/books", response_model=List[db.BookResponse])
+@app.get("/books", response_model=List[schemas.BookResponse])
 def get_books(
     title: Optional[str] = Query(None),
     author: Optional[str] = Query(None),
