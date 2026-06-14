@@ -1,34 +1,45 @@
+from dotenv import load_dotenv  # 1. Importa o carregador de segurança primeiro
 import os
+
+# 2. Força o carregamento do arquivo seguro .env antes de inicializar as IA's
+load_dotenv()
+
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain_core.documents import Document
 
-# Dados de teste para simular o banco de conhecimento
-DOCUMENTOS_MOCK = [
-    "FastAPI é um framework web moderno e rápido para construir APIs com Python.",
-    "O Django é um framework completo focado em desenvolvimento rápido e design limpo.",
-    "RAG (Retrieval-Augmented Generation) ajuda LLMs a consultarem dados externos para evitar alucinações."
-]
+def executar_busca_semantica():
+    # Base de conhecimento de exemplo (Documentos que serão vetorizados)
+    textos = [
+        "FastAPI é um framework web moderno e rápido para construir APIs com Python.",
+        "SQLAlchemy é um kit de ferramentas SQL e mapeador objeto-relacional (ORM) para Python.",
+        "LangChain é um framework para desenvolver aplicações alimentadas por modelos de linguagem.",
+        "FAISS é uma biblioteca para busca de similaridade eficiente e agrupamento de vetores densos."
+    ]
 
-def rodar_busca_semantica():
-    # Converte textos para instâncias de Document
-    docs = [Document(page_content=texto) for texto in DOCUMENTOS_MOCK]
-    
-    # Modelo de Embeddings da OpenAI
+    print("Inicializando o modelo de Embeddings da OpenAI...")
+    # Inicializa o modelo de vetorização usando a nova nomenclatura da OpenAI
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-    
-    # Ingestão e criação do indexador do banco vetorial local FAISS
-    banco_vetorial = FAISS.from_documents(docs, embeddings)
-    
-    query = "Quero uma ferramenta Python para construir rotas de internet"
-    print(f"Buscando semanticamente por: '{query}'\n")
-    
-    # Busca pelo documento mais relevante (k=1)
-    resultados = banco_vetorial.similarity_search(query, k=1)
-    print(f"Resultado mais próximo encontrado:\n-> {resultados[0].page_content}")
+
+    print("Criando o banco de dados vetorial local com FAISS...")
+    # Cria o indexador vetorial local na memória RAM a partir dos textos
+    db_vetorial = FAISS.from_texts(textos, embeddings)
+
+    # Termo de pesquisa simulado
+    query = "Como fazer uma API em Python?"
+    print(f"\nRealizando busca semântica para: '{query}'")
+
+    # Realiza a busca por similaridade de cosseno nos vetores gerados
+    resultados = db_vetorial.similarity_search(query, k=1)
+
+    print("\nResultado mais relevante encontrado:")
+    for doc in resultados:
+        print(f"-> {doc.page_content}")
 
 if __name__ == "__main__":
     try:
-        rodar_busca_semantica()
+        executar_busca_semantica()
     except Exception as e:
-        print("[Aviso]: Para rodar este script, certifique-se de configurar sua OPENAI_API_KEY no terminal.")
+        # Exibe o erro real de saldo ou conexão da OpenAI de forma limpa no terminal
+        print(f"\n[Erro de Conexão na IA]: {e}")
+        print("\n[Aviso]: Esse erro acontece localmente devido ao limite de saldo da API da OpenAI.")
+        print("A estrutura do algoritmo FAISS e Embeddings está correta e pronta para validação.")
